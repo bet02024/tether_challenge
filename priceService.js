@@ -4,6 +4,9 @@ const priceStorage = require('./priceStorage');
 let latestResults = [];
 let lastUpdated = null;
 
+
+
+
 const axiosConfig = {
   headers: {
     'x-cg-demo-api-key': process.env['CG-API-KEY']
@@ -11,8 +14,8 @@ const axiosConfig = {
 };
 
   // Get top 5 coins by market cap
-async function fetchTop5Coins() {
-  const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1';
+async function fetchTopCoins(topCoins) {
+  const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${topCoins}&page=1`;
   const { data } = await axios.get(url, axiosConfig);
   return data.map(c => ({ id: c.id, symbol: c.symbol, name: c.name }));
 }
@@ -45,7 +48,8 @@ async function getAveragePriceForCoin(coinId) {
 
 async function fetchPricesPipeline() {
   try {
-    const coins = await fetchTop5Coins();
+    const topCoins = 5;
+    const coins = await fetchTopCoins(topCoins);
     const results = [];
     for (const coin of coins) {
       if (coin.id === "tether") {
